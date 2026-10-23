@@ -6,9 +6,12 @@ import { Button, EmptyState } from '../ui/primitives';
 const LINKS: Array<{ to: string; key: MessageKey; end?: boolean }> = [
   { to: '/admin', key: 'admin.dashboard', end: true },
   { to: '/admin/products', key: 'admin.products' },
+  { to: '/admin/categories', key: 'admin.categories' },
+  { to: '/admin/brands', key: 'admin.brands' },
   { to: '/admin/orders', key: 'admin.orders' },
   { to: '/admin/inbox', key: 'admin.appointments' },
   { to: '/admin/customers', key: 'admin.customers' },
+  { to: '/admin/content', key: 'admin.content' },
   { to: '/admin/settings', key: 'admin.settings' },
 ];
 

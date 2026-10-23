@@ -22,6 +22,7 @@ export const AdminProducts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [editing, setEditing] = useState<{ product: AdminProduct; variants: Variant[] } | null>(null);
+  const [creating, setCreating] = useState(false);
   const [savedNote, setSavedNote] = useState(false);
 
   const load = async () => {
@@ -69,6 +70,12 @@ export const AdminProducts = () => {
     await load();
   };
 
+  const deleteProduct = async (product: AdminProduct) => {
+    if (!window.confirm(t('admin.deleteConfirm'))) return;
+    await api.admin.deleteProduct(product.id);
+    await load();
+  };
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -85,8 +92,16 @@ export const AdminProducts = () => {
         <div className="flex items-center gap-3 text-[13px] text-slate">
           {savedNote ? <span className="text-champagne-dark">{t('admin.savedNote')}</span> : null}
           <span>{t('common.results', { count: formatNumber(data?.total ?? 0, locale) })}</span>
+          <Button size="sm" onClick={() => setCreating(true)}>{t('admin.createNew')}</Button>
         </div>
       </div>
+
+      {creating ? (
+        <CreateProductForm
+          onCancel={() => setCreating(false)}
+          onCreated={async () => { setCreating(false); await load(); }}
+        />
+      ) : null}
 
       {loading ? <Skeleton className="h-72 w-full" /> : null}
       {error ? <p className="text-[14px] text-[#8E3722]">{error}</p> : null}
@@ -102,6 +117,7 @@ export const AdminProducts = () => {
                 <th className="p-3 text-start">{t('admin.stock')}</th>
                 <th className="p-3 text-start">{t('admin.active')}</th>
                 <th className="p-3 text-start">{t('admin.variants')}</th>
+                <th className="p-3"></th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -151,6 +167,9 @@ export const AdminProducts = () => {
                     <Button size="sm" variant="outline" onClick={() => void openEditor(product)}>
                       {t('admin.variants')} ({product.variantCount})
                     </Button>
+                  </td>
+                  <td className="p-3">
+                    <Button size="sm" variant="ghost" onClick={() => void deleteProduct(product)}>{t('action.remove')}</Button>
                   </td>
                 </tr>
               ))}
@@ -231,6 +250,44 @@ export const AdminProducts = () => {
       <p className="text-[12px] text-slate">
         {t('footer.demoNote')} · {formatDate(new Date(), locale)}
       </p>
+    </div>
+  );
+};
+
+const CreateProductForm = ({ onCancel, onCreated }: { onCancel: () => void; onCreated: () => void }) => {
+  const { t } = useI18n();
+  const [form, setForm] = useState({ slug: '', sku: '', nameEn: '', nameFa: '', price: 0 });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const submit = async () => {
+    setSaving(true);
+    setError(null);
+    try {
+      await api.admin.createProduct(form);
+      onCreated();
+    } catch (cause) {
+      setError(cause instanceof Error ? cause.message : t('common.errorBody'));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <div className="border border-navy bg-paper p-5">
+      <div className="flex items-center justify-between gap-3">
+        <h2 className="text-[15px] text-navy">{t('admin.createNew')}</h2>
+        <Button size="sm" variant="ghost" onClick={onCancel}>{t('action.cancel')}</Button>
+      </div>
+      <div className="mt-4 grid gap-4 sm:grid-cols-2">
+        <Field label={t('admin.slug')}><Input value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} /></Field>
+        <Field label="SKU"><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></Field>
+        <Field label={t('admin.nameEn')}><Input value={form.nameEn} onChange={(e) => setForm({ ...form, nameEn: e.target.value })} /></Field>
+        <Field label={t('admin.nameFa')}><Input value={form.nameFa} onChange={(e) => setForm({ ...form, nameFa: e.target.value })} /></Field>
+        <Field label={t('admin.price')}><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
+      </div>
+      {error ? <p className="mt-3 text-[13px] text-[#8E3722]">{error}</p> : null}
+      <Button className="mt-4" onClick={submit} loading={saving}>{t('action.save')}</Button>
     </div>
   );
 };

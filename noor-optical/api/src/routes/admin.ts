@@ -241,6 +241,37 @@ adminRouter.patch(
   }),
 );
 
+adminRouter.post(
+  '/products',
+  asyncRoute(async (req, res) => {
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const nameEn = requiredString(body.nameEn, 'nameEn', { max: 200 });
+    const nameFa = requiredString(body.nameFa, 'nameFa', { max: 200 });
+    const slug = requiredString(body.slug, 'slug', { max: 200 });
+    const sku = requiredString(body.sku, 'sku', { max: 100 });
+    const price = optionalNumber(body.price, 'price');
+    if (price === null || price < 0) throw badRequest('Price must be a positive number');
+
+    const row = await queryOne<{ id: number }>(
+      `INSERT INTO products (slug, sku, name_en, name_fa, price, currency, is_active, is_featured, is_new)
+       VALUES ($1, $2, $3, $4, $5, 'IRT', TRUE, FALSE, FALSE) RETURNING id`,
+      [slug, sku, nameEn, nameFa, price],
+    );
+    if (!row) throw badRequest('Could not create product');
+    res.json({ id: row.id, ok: true });
+  }),
+);
+
+adminRouter.delete(
+  '/products/:id',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await queryOne<{ id: number }>('DELETE FROM products WHERE id = $1 RETURNING id', [id]);
+    if (!row) throw notFoundError('Product not found');
+    res.json({ ok: true });
+  }),
+);
+
 adminRouter.patch(
   '/variants/:id',
   asyncRoute(async (req, res) => {
@@ -490,6 +521,230 @@ adminRouter.patch(
       `UPDATE services SET ${assignments.join(', ')} WHERE id = $1 RETURNING id`,
       values as never[],
     );
+    if (!row) throw notFoundError('Service not found');
+    res.json({ ok: true });
+  }),
+);
+
+/* ------------------------------------------------------------ categories */
+
+adminRouter.get(
+  '/categories',
+  asyncRoute(async (_req, res) => {
+    const rows = await query<Record<string, unknown>>(
+      'SELECT * FROM categories ORDER BY sort_order, id',
+    );
+    res.json({
+      items: rows.map((row) => ({
+        id: Number(row.id),
+        slug: String(row.slug),
+        family: String(row.family),
+        nameEn: String(row.name_en),
+        nameFa: String(row.name_fa),
+        taglineEn: (row.tagline_en as string | null) ?? null,
+        taglineFa: (row.tagline_fa as string | null) ?? null,
+        descriptionEn: (row.description_en as string | null) ?? null,
+        descriptionFa: (row.description_fa as string | null) ?? null,
+        imageUrl: (row.image_url as string | null) ?? null,
+        sortOrder: Number(row.sort_order),
+        isActive: Boolean(row.is_active),
+      })),
+    });
+  }),
+);
+
+adminRouter.post(
+  '/categories',
+  asyncRoute(async (req, res) => {
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const slug = requiredString(body.slug, 'slug', { max: 120 });
+    const nameEn = requiredString(body.nameEn, 'nameEn', { max: 200 });
+    const nameFa = requiredString(body.nameFa, 'nameFa', { max: 200 });
+    const family = optionalString(body.family, 'family', 40) ?? 'frames';
+    const row = await queryOne<{ id: number }>(
+      `INSERT INTO categories (slug, family, name_en, name_fa, is_active)
+       VALUES ($1, $2, $3, $4, TRUE) RETURNING id`,
+      [slug, family, nameEn, nameFa],
+    );
+    if (!row) throw badRequest('Could not create category');
+    res.json({ id: row.id, ok: true });
+  }),
+);
+
+adminRouter.patch(
+  '/categories/:id',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const assignments: string[] = [];
+    const values: unknown[] = [id];
+
+    for (const [field, column] of [
+      ['nameEn', 'name_en'],
+      ['nameFa', 'name_fa'],
+      ['slug', 'slug'],
+      ['taglineEn', 'tagline_en'],
+      ['taglineFa', 'tagline_fa'],
+      ['descriptionEn', 'description_en'],
+      ['descriptionFa', 'description_fa'],
+      ['family', 'family'],
+    ] as const) {
+      if (!(field in body)) continue;
+      values.push(optionalString(body[field], field));
+      assignments.push(`${column} = $${values.length}`);
+    }
+    if ('imageUrl' in body) {
+      values.push(optionalString(body.imageUrl, 'imageUrl'));
+      assignments.push(`image_url = $${values.length}`);
+    }
+    const isActive = optionalBoolean(body.isActive);
+    if (isActive !== null) {
+      values.push(isActive);
+      assignments.push(`is_active = $${values.length}`);
+    }
+    if ('sortOrder' in body) {
+      values.push(optionalNumber(body.sortOrder, 'sortOrder') ?? 0);
+      assignments.push(`sort_order = $${values.length}`);
+    }
+    if (!assignments.length) throw badRequest('Nothing to update');
+
+    const row = await queryOne<{ id: number }>(
+      `UPDATE categories SET ${assignments.join(', ')} WHERE id = $1 RETURNING id`,
+      values as never[],
+    );
+    if (!row) throw notFoundError('Category not found');
+    res.json({ ok: true });
+  }),
+);
+
+adminRouter.delete(
+  '/categories/:id',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await queryOne<{ id: number }>('DELETE FROM categories WHERE id = $1 RETURNING id', [id]);
+    if (!row) throw notFoundError('Category not found');
+    res.json({ ok: true });
+  }),
+);
+
+/* --------------------------------------------------------------- brands */
+
+adminRouter.get(
+  '/brands',
+  asyncRoute(async (_req, res) => {
+    const rows = await query<Record<string, unknown>>(
+      'SELECT * FROM brands ORDER BY sort_order, id',
+    );
+    res.json({
+      items: rows.map((row) => ({
+        id: Number(row.id),
+        slug: String(row.slug),
+        name: String(row.name),
+        nameFa: (row.name_fa as string | null) ?? null,
+        country: (row.country as string | null) ?? null,
+        descriptionEn: (row.description_en as string | null) ?? null,
+        descriptionFa: (row.description_fa as string | null) ?? null,
+        imageUrl: (row.image_url as string | null) ?? null,
+        sortOrder: Number(row.sort_order),
+        isActive: Boolean(row.is_active),
+      })),
+    });
+  }),
+);
+
+adminRouter.post(
+  '/brands',
+  asyncRoute(async (req, res) => {
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const slug = requiredString(body.slug, 'slug', { max: 120 });
+    const name = requiredString(body.name, 'name', { max: 200 });
+    const row = await queryOne<{ id: number }>(
+      `INSERT INTO brands (slug, name, is_active) VALUES ($1, $2, TRUE) RETURNING id`,
+      [slug, name],
+    );
+    if (!row) throw badRequest('Could not create brand');
+    res.json({ id: row.id, ok: true });
+  }),
+);
+
+adminRouter.patch(
+  '/brands/:id',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const assignments: string[] = [];
+    const values: unknown[] = [id];
+
+    for (const [field, column] of [
+      ['name', 'name'],
+      ['slug', 'slug'],
+      ['nameFa', 'name_fa'],
+      ['country', 'country'],
+      ['descriptionEn', 'description_en'],
+      ['descriptionFa', 'description_fa'],
+    ] as const) {
+      if (!(field in body)) continue;
+      values.push(optionalString(body[field], field));
+      assignments.push(`${column} = $${values.length}`);
+    }
+    if ('imageUrl' in body) {
+      values.push(optionalString(body.imageUrl, 'imageUrl'));
+      assignments.push(`image_url = $${values.length}`);
+    }
+    const isActive = optionalBoolean(body.isActive);
+    if (isActive !== null) {
+      values.push(isActive);
+      assignments.push(`is_active = $${values.length}`);
+    }
+    if ('sortOrder' in body) {
+      values.push(optionalNumber(body.sortOrder, 'sortOrder') ?? 0);
+      assignments.push(`sort_order = $${values.length}`);
+    }
+    if (!assignments.length) throw badRequest('Nothing to update');
+
+    const row = await queryOne<{ id: number }>(
+      `UPDATE brands SET ${assignments.join(', ')} WHERE id = $1 RETURNING id`,
+      values as never[],
+    );
+    if (!row) throw notFoundError('Brand not found');
+    res.json({ ok: true });
+  }),
+);
+
+adminRouter.delete(
+  '/brands/:id',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await queryOne<{ id: number }>('DELETE FROM brands WHERE id = $1 RETURNING id', [id]);
+    if (!row) throw notFoundError('Brand not found');
+    res.json({ ok: true });
+  }),
+);
+
+/* ------------------------------------------------------ service create/delete */
+
+adminRouter.post(
+  '/services',
+  asyncRoute(async (req, res) => {
+    const body = (req.body ?? {}) as Record<string, unknown>;
+    const slug = requiredString(body.slug, 'slug', { max: 120 });
+    const nameEn = requiredString(body.nameEn, 'nameEn', { max: 200 });
+    const nameFa = requiredString(body.nameFa, 'nameFa', { max: 200 });
+    const row = await queryOne<{ id: number }>(
+      `INSERT INTO services (slug, name_en, name_fa, is_active)
+       VALUES ($1, $2, $3, TRUE) RETURNING id`,
+      [slug, nameEn, nameFa],
+    );
+    if (!row) throw badRequest('Could not create service');
+    res.json({ id: row.id, ok: true });
+  }),
+);
+
+adminRouter.delete(
+  '/services/:id',
+  asyncRoute(async (req, res) => {
+    const id = Number(req.params.id);
+    const row = await queryOne<{ id: number }>('DELETE FROM services WHERE id = $1 RETURNING id', [id]);
     if (!row) throw notFoundError('Service not found');
     res.json({ ok: true });
   }),

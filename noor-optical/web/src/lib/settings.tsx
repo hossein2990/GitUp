@@ -44,6 +44,20 @@ const FALLBACK: PublicSettings = {
   },
   hero: { headlineEn: '', headlineFa: '', bodyEn: '', bodyFa: '', imageUrl: '' },
   trust: [],
+  optometrist: {
+    nameEn: '', nameFa: '', titleEn: '', titleFa: '', bioEn: '', bioFa: '',
+    imageUrl: '', credentialsEn: '', credentialsFa: '',
+  },
+  about: {
+    eyebrowEn: '', eyebrowFa: '', titleEn: '', titleFa: '',
+    p1En: '', p1Fa: '', p2En: '', p2Fa: '', p3En: '', p3Fa: '',
+    v1TitleEn: '', v1TitleFa: '', v1BodyEn: '', v1BodyFa: '',
+    v2TitleEn: '', v2TitleFa: '', v2BodyEn: '', v2BodyFa: '',
+    v3TitleEn: '', v3TitleFa: '', v3BodyEn: '', v3BodyFa: '',
+  },
+  seo: {
+    titleEn: '', titleFa: '', descriptionEn: '', descriptionFa: '', ogImageUrl: '',
+  },
 };
 
 type SettingsContextValue = {

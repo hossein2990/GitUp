@@ -175,6 +175,48 @@ export type PublicSettings = {
   };
   hero: { headlineEn: string; headlineFa: string; bodyEn: string; bodyFa: string; imageUrl: string };
   trust: Array<{ titleEn: string; titleFa: string; bodyEn: string; bodyFa: string }>;
+  optometrist: {
+    nameEn: string;
+    nameFa: string;
+    titleEn: string;
+    titleFa: string;
+    bioEn: string;
+    bioFa: string;
+    imageUrl: string;
+    credentialsEn: string;
+    credentialsFa: string;
+  };
+  about: {
+    eyebrowEn: string;
+    eyebrowFa: string;
+    titleEn: string;
+    titleFa: string;
+    p1En: string;
+    p1Fa: string;
+    p2En: string;
+    p2Fa: string;
+    p3En: string;
+    p3Fa: string;
+    v1TitleEn: string;
+    v1TitleFa: string;
+    v1BodyEn: string;
+    v1BodyFa: string;
+    v2TitleEn: string;
+    v2TitleFa: string;
+    v2BodyEn: string;
+    v2BodyFa: string;
+    v3TitleEn: string;
+    v3TitleFa: string;
+    v3BodyEn: string;
+    v3BodyFa: string;
+  };
+  seo: {
+    titleEn: string;
+    titleFa: string;
+    descriptionEn: string;
+    descriptionFa: string;
+    ogImageUrl: string;
+  };
 };
 
 export type AuthUser = {

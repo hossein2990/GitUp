@@ -18,6 +18,9 @@ import { HomePage } from './pages/Home';
 import { OrderConfirmationPage, TrackOrderPage } from './pages/OrderConfirmation';
 import { ProductDetailPage } from './pages/ProductDetail';
 import { ServiceDetailPage, ServicesPage } from './pages/Services';
+import { AdminBrands } from './pages/admin/AdminBrands';
+import { AdminCategories } from './pages/admin/AdminCategories';
+import { AdminContent } from './pages/admin/AdminContent';
 import { AdminCustomers } from './pages/admin/AdminCustomers';
 import { AdminDashboard } from './pages/admin/AdminDashboard';
 import { AdminInbox } from './pages/admin/AdminInbox';
@@ -91,9 +94,12 @@ export const App = () => (
     <Route path="/admin" element={<AdminLayout />}>
       <Route index element={<AdminDashboard />} />
       <Route path="products" element={<AdminProducts />} />
+      <Route path="categories" element={<AdminCategories />} />
+      <Route path="brands" element={<AdminBrands />} />
       <Route path="orders" element={<AdminOrders />} />
       <Route path="inbox" element={<AdminInbox />} />
       <Route path="customers" element={<AdminCustomers />} />
+      <Route path="content" element={<AdminContent />} />
       <Route path="settings" element={<AdminSettings />} />
     </Route>
   </Routes>

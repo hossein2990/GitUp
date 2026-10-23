@@ -10,10 +10,11 @@ export const AboutPage = () => {
   const settings = useSettings();
   const ref = useReveal<HTMLDivElement>();
 
+  const about = settings.about;
   const values = [
-    { title: t('about.v1Title'), body: t('about.v1Body') },
-    { title: t('about.v2Title'), body: t('about.v2Body') },
-    { title: t('about.v3Title'), body: t('about.v3Body') },
+    { title: pick(about.v1TitleFa, about.v1TitleEn), body: pick(about.v1BodyFa, about.v1BodyEn) },
+    { title: pick(about.v2TitleFa, about.v2TitleEn), body: pick(about.v2BodyFa, about.v2BodyEn) },
+    { title: pick(about.v3TitleFa, about.v3TitleEn), body: pick(about.v3BodyFa, about.v3BodyEn) },
   ];
 
   return (
@@ -21,10 +22,10 @@ export const AboutPage = () => {
       <div className="mx-auto max-w-[1600px] px-4 pt-10 md:px-8 md:pt-14">
         <Breadcrumbs items={[{ label: t('nav.home'), to: '/' }, { label: t('nav.about') }]} />
         <div className="mt-6 max-w-3xl">
-          <p className="label-eyebrow text-champagne-dark">{t('about.eyebrow')}</p>
-          <h1 className="mt-4 text-display text-navy">{t('about.title')}</h1>
-          <p className="mt-6 text-[16px] leading-relaxed text-slate">{t('about.p1')}</p>
-          <p className="mt-4 text-[16px] leading-relaxed text-slate">{t('about.p2')}</p>
+          <p className="label-eyebrow text-champagne-dark">{pick(about.eyebrowFa, about.eyebrowEn)}</p>
+          <h1 className="mt-4 text-display text-navy">{pick(about.titleFa, about.titleEn)}</h1>
+          <p className="mt-6 text-[16px] leading-relaxed text-slate">{pick(about.p1Fa, about.p1En)}</p>
+          <p className="mt-4 text-[16px] leading-relaxed text-slate">{pick(about.p2Fa, about.p2En)}</p>
         </div>
       </div>
 
@@ -35,6 +36,19 @@ export const AboutPage = () => {
 
       <section ref={ref} className="mx-auto max-w-[1600px] px-4 py-20 md:px-8">
         <h2 className="text-section text-navy">{t('about.valuesTitle')}</h2>
+        {settings.optometrist.nameEn ? (
+          <div className="mt-6 grid gap-8 border border-line bg-paper p-7 md:grid-cols-[1fr_2fr]">
+            {settings.optometrist.imageUrl ? (
+              <img src={settings.optometrist.imageUrl} alt={pick(settings.optometrist.nameFa, settings.optometrist.nameEn)} className="aspect-[3/4] w-full object-cover" />
+            ) : null}
+            <div className="flex flex-col justify-center">
+              <p className="label-eyebrow text-champagne-dark">{pick(settings.optometrist.titleFa, settings.optometrist.titleEn)}</p>
+              <h3 className="mt-3 text-[20px] text-navy">{pick(settings.optometrist.nameFa, settings.optometrist.nameEn)}</h3>
+              <p className="mt-4 text-[15px] leading-relaxed text-slate">{pick(settings.optometrist.bioFa, settings.optometrist.bioEn)}</p>
+              <p className="mt-4 text-[13px] leading-relaxed text-slate">{pick(settings.optometrist.credentialsFa, settings.optometrist.credentialsEn)}</p>
+            </div>
+          </div>
+        ) : null}
         <div className="mt-10 grid gap-px border border-line bg-line md:grid-cols-3">
           {values.map((value) => (
             <div key={value.title} className="bg-paper p-7">
@@ -60,7 +74,7 @@ export const AboutPage = () => {
                 <dd className="mt-2">{pick(settings.contact.hoursFa, settings.contact.hoursEn)}</dd>
               </div>
             </dl>
-            <p className="mt-6 text-[13px] leading-relaxed text-ivory/55">{t('about.p3')}</p>
+            <p className="mt-6 text-[13px] leading-relaxed text-ivory/55">{pick(settings.about.p3Fa, settings.about.p3En)}</p>
             <div className="mt-8 flex flex-wrap gap-3">
               <LinkButton to="/contact" variant="inverse" size="sm">
                 {t('action.contactUs')}

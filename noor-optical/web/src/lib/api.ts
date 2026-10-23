@@ -190,6 +190,10 @@ export const api = {
       request<{ ok: boolean }>(`/admin/products/${id}`, { method: 'PATCH', body }),
     updateVariant: (id: number, body: Record<string, unknown>) =>
       request<{ ok: boolean }>(`/admin/variants/${id}`, { method: 'PATCH', body }),
+    createProduct: (body: Record<string, unknown>) =>
+      request<{ id: number; ok: boolean }>('/admin/products', { method: 'POST', body }),
+    deleteProduct: (id: number) =>
+      request<{ ok: boolean }>(`/admin/products/${id}`, { method: 'DELETE' }),
     orders: (query: { status?: string; page?: number } = {}) =>
       request<{ items: Order[]; total: number; statuses: string[] }>('/admin/orders', { query }),
     updateOrder: (id: number, status: string) =>
@@ -246,6 +250,54 @@ export const api = {
       }>('/admin/services'),
     updateService: (id: number, body: Record<string, unknown>) =>
       request<{ ok: boolean }>(`/admin/services/${id}`, { method: 'PATCH', body }),
+    createService: (body: Record<string, unknown>) =>
+      request<{ id: number; ok: boolean }>('/admin/services', { method: 'POST', body }),
+    deleteService: (id: number) =>
+      request<{ ok: boolean }>(`/admin/services/${id}`, { method: 'DELETE' }),
+    categories: () =>
+      request<{
+        items: Array<{
+          id: number;
+          slug: string;
+          family: string;
+          nameEn: string;
+          nameFa: string;
+          taglineEn: string | null;
+          taglineFa: string | null;
+          descriptionEn: string | null;
+          descriptionFa: string | null;
+          imageUrl: string | null;
+          sortOrder: number;
+          isActive: boolean;
+        }>;
+      }>('/admin/categories'),
+    createCategory: (body: Record<string, unknown>) =>
+      request<{ id: number; ok: boolean }>('/admin/categories', { method: 'POST', body }),
+    updateCategory: (id: number, body: Record<string, unknown>) =>
+      request<{ ok: boolean }>(`/admin/categories/${id}`, { method: 'PATCH', body }),
+    deleteCategory: (id: number) =>
+      request<{ ok: boolean }>(`/admin/categories/${id}`, { method: 'DELETE' }),
+    brands: () =>
+      request<{
+        items: Array<{
+          id: number;
+          slug: string;
+          name: string;
+          nameFa: string | null;
+          country: string | null;
+          descriptionEn: string | null;
+          descriptionFa: string | null;
+          imageUrl: string | null;
+          sortOrder: number;
+          isActive: boolean;
+        }>;
+      }>('/admin/brands'),
+    createBrand: (body: Record<string, unknown>) =>
+      request<{ id: number; ok: boolean }>('/admin/brands', { method: 'POST', body }),
+    updateBrand: (id: number, body: Record<string, unknown>) =>
+      request<{ ok: boolean }>(`/admin/brands/${id}`, { method: 'PATCH', body }),
+    deleteBrand: (id: number) =>
+      request<{ ok: boolean }>(`/admin/brands/${id}`, { method: 'DELETE' }),
     customers: () =>
       request<{
         items: Array<{

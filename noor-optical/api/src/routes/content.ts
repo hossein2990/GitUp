@@ -30,6 +30,48 @@ export type PublicSettings = {
   };
   hero: { headlineEn: string; headlineFa: string; bodyEn: string; bodyFa: string; imageUrl: string };
   trust: Array<{ titleEn: string; titleFa: string; bodyEn: string; bodyFa: string }>;
+  optometrist: {
+    nameEn: string;
+    nameFa: string;
+    titleEn: string;
+    titleFa: string;
+    bioEn: string;
+    bioFa: string;
+    imageUrl: string;
+    credentialsEn: string;
+    credentialsFa: string;
+  };
+  about: {
+    eyebrowEn: string;
+    eyebrowFa: string;
+    titleEn: string;
+    titleFa: string;
+    p1En: string;
+    p1Fa: string;
+    p2En: string;
+    p2Fa: string;
+    p3En: string;
+    p3Fa: string;
+    v1TitleEn: string;
+    v1TitleFa: string;
+    v1BodyEn: string;
+    v1BodyFa: string;
+    v2TitleEn: string;
+    v2TitleFa: string;
+    v2BodyEn: string;
+    v2BodyFa: string;
+    v3TitleEn: string;
+    v3TitleFa: string;
+    v3BodyEn: string;
+    v3BodyFa: string;
+  };
+  seo: {
+    titleEn: string;
+    titleFa: string;
+    descriptionEn: string;
+    descriptionFa: string;
+    ogImageUrl: string;
+  };
 };
 
 export const DEFAULT_SETTINGS: PublicSettings = {
@@ -95,6 +137,48 @@ export const DEFAULT_SETTINGS: PublicSettings = {
       bodyFa: 'تنظیم، شست‌وشو و پیگیری سفارش از طریق فروشگاه.',
     },
   ],
+  optometrist: {
+    nameEn: 'Dr. Noor Ayazi',
+    nameFa: 'دکتر نور آیازی',
+    titleEn: 'Optometrist and Eyewear Specialist',
+    titleFa: 'اوتومتریست و متخصص عینک',
+    bioEn: 'With over fifteen years of experience in optical care, Dr. Ayazi founded Noor Optical to bring precision lens fitting and frame styling to every customer.',
+    bioFa: 'با بیش از پانزده سال تجربه در مراقبت‌های اپتیک، دکتر آیازی فروشگاه نور اپتیک را برای ارائه دقیق تنظیم عدسی و انتخاب فریم تأسیس کرد.',
+    imageUrl: '',
+    credentialsEn: 'Doctor of Optometry, Member of the Iranian Optometric Association',
+    credentialsFa: 'دکترای اپتومتری، عضو انجمن اپتومتری ایران',
+  },
+  about: {
+    eyebrowEn: 'About Noor Optical',
+    eyebrowFa: 'درباره نور اپتیک',
+    titleEn: 'A showroom built around careful choices',
+    titleFa: 'فروشگاهی برای انتخاب دقیق عینک',
+    p1En: 'Noor Optical is a specialised eyewear showroom focused on getting frame and lens choices right. Our collection is organised by shape, material and size to make choosing simpler.',
+    p1Fa: 'نور اپتیک یک فروشگاه تخصصی عینک است که روی انتخاب دقیق فریم و عدسی تمرکز دارد. مجموعه ما بر اساس فرم، متریال و سایز دسته‌بندی شده تا انتخاب ساده‌تر شود.',
+    p2En: 'We make no medical claims. Our work is guidance on frame fit, lens material and eyewear care.',
+    p2Fa: 'ما ادعای پزشکی یا درمانی نمی‌کنیم؛ کار ما راهنمایی درباره تناسب فریم، متریال عدسی و نگهداری عینک است.',
+    p3En: 'Contact details, opening hours and services on this site are editable from the store admin panel.',
+    p3Fa: 'اطلاعات تماس، ساعات کاری و خدمات این صفحه از پنل مدیریت فروشگاه قابل ویرایش است.',
+    v1TitleEn: 'Straight information',
+    v1TitleFa: 'شفافیت در اطلاعات',
+    v1BodyEn: 'We show frame and lens specifications as they are, and never invent data.',
+    v1BodyFa: 'مشخصات فریم و عدسی را همان‌طور که هست نمایش می‌دهیم و داده‌ای را از خود نمی‌سازیم.',
+    v2TitleEn: 'Informed choices',
+    v2TitleFa: 'انتخاب آگاهانه',
+    v2BodyEn: 'We explain how material, index and coating differ, so the decision is yours to make knowingly.',
+    v2BodyFa: 'تفاوت متریال، ضریب شکست و پوشش را توضیح می‌دهیم تا انتخاب شما بر پایه آگاهی باشد.',
+    v3TitleEn: 'Support after purchase',
+    v3TitleFa: 'پشتیبانی پس از خرید',
+    v3BodyEn: 'Adjustment, cleaning and order follow-up happen in the showroom.',
+    v3BodyFa: 'تنظیم، شست‌وشو و پیگیری سفارش در فروشگاه انجام می‌شود.',
+  },
+  seo: {
+    titleEn: 'NOOR OPTICAL — Premium Eyewear & Optical Care',
+    titleFa: 'فروشگاه تخصصی عینک نور — عینک و خدمات اپتیک',
+    descriptionEn: 'Discover premium eyewear, prescription lenses, and professional optical services at Noor Optical.',
+    descriptionFa: 'عینک‌های پریمیوم، عدسی طبی و خدمات اپتیک حرفه‌ای را در فروشگاه نور اپتیک کشف کنید.',
+    ogImageUrl: '',
+  },
 };
 
 /** Arrays and scalars replace a default wholesale; only plain objects merge. */
