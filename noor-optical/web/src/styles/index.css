@@ -1,0 +1,167 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design tokens — the single source of truth for the NOOR OPTICAL palette.
+ * Channel triplets so Tailwind can apply opacity modifiers (`bg-navy/70`).
+ */
+:root {
+  --navy: 20 40 61; /* #14283D */
+  --navy-deep: 14 28 43;
+  --navy-soft: 30 58 84;
+  --ivory: 248 246 241;
+  --paper: 255 255 255;
+  --champagne: 197 167 125;
+  --champagne-light: 223 207 176;
+  --champagne-dark: 169 138 95;
+  --ink: 24 34 44;
+  --slate: 114 119 125;
+  --slate-light: 154 160 166;
+  --line: 227 222 212;
+  --line-strong: 207 199 184;
+
+  --header-height: 72px;
+}
+
+@layer base {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-ivory text-ink antialiased;
+    font-size: 17px;
+    line-height: 1.6;
+  }
+
+  html[dir='rtl'] body {
+    font-family: 'Vazirmatn', 'Inter', system-ui, sans-serif;
+  }
+
+  html[dir='ltr'] body {
+    font-family: 'Inter', 'Vazirmatn', system-ui, sans-serif;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display;
+    letter-spacing: -0.015em;
+  }
+
+  /* Visible, consistent keyboard focus in the brand accent. */
+  :focus-visible {
+    outline: 2px solid rgb(var(--champagne));
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  ::selection {
+    background-color: rgb(var(--champagne) / 0.35);
+  }
+
+  input,
+  select,
+  textarea,
+  button {
+    font: inherit;
+  }
+
+  /* Respect reduced-motion preferences across every animated surface. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+    }
+  }
+}
+
+@layer components {
+  /* Fine-line precision: hairline champagne rules used to define sections. */
+  .rule-champagne {
+    @apply border-t border-champagne/60;
+  }
+
+  .label-eyebrow {
+    @apply text-[11px] uppercase tracking-label text-slate;
+  }
+
+  .surface-card {
+    @apply border border-line bg-paper transition-colors duration-300;
+  }
+
+  .hover-focal img {
+    @apply transition-transform duration-700 ease-focus;
+  }
+
+  .hover-focal:hover img {
+    transform: scale(1.045);
+  }
+
+  .no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .carousel-track {
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+  }
+
+  .carousel-track > * {
+    scroll-snap-align: start;
+  }
+
+  .carousel-track::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@layer utilities {
+  /* Logical-property helpers so RTL and LTR share one layout system. */
+  .ms-auto {
+    margin-inline-start: auto;
+  }
+
+  .me-auto {
+    margin-inline-end: auto;
+  }
+
+  .text-start-logical {
+    text-align: start;
+  }
+
+  .flip-rtl {
+    transform: rotateY(0deg);
+  }
+
+  html[dir='rtl'] .flip-rtl {
+    transform: rotateY(180deg);
+  }
+
+  .reveal-init {
+    opacity: 0;
+  }
+
+  .reveal-in {
+    animation: rise 700ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+}

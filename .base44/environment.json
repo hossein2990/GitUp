@@ -1,0 +1,14 @@
+{
+  "previewPort": 3000,
+  "healthPath": "/",
+  "startCommand": "docker compose -f docker-compose.base44.yml up -d --build",
+  "notes": "NOOR OPTICAL storefront. Web dev server (Vite) on host port 3000 proxies /api to the API service on port 8000. Postgres 16 runs as the db service; migrations and the demonstration catalogue are seeded by the one-shot migrate service.",
+  "secrets": [
+    {
+      "name": "JWT_SECRET",
+      "description": "Signing key for customer and staff session tokens. A development placeholder is generated automatically; replace it with a long random value for production.",
+      "requiredAtBoot": true,
+      "generatedForDevelopment": true
+    }
+  ]
+}

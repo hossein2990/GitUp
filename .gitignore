@@ -5,3 +5,10 @@ build
 
 # User-specific xcconfig files
 Xcode-Configurations/DEVELOPMENT_TEAM.xcconfig
+
+# NOOR OPTICAL web application
+noor-optical/web/node_modules/
+noor-optical/api/node_modules/
+noor-optical/web/dist/
+noor-optical/api/dist/
+*.log

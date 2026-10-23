@@ -1,0 +1,134 @@
+# NOOR OPTICAL — sandbox development stack.
+#
+# Everything runs from the cloned source with a live-reload dev command, so edits
+# show up without rebuilding anything. Postgres keeps its data in a named volume.
+
+name: noor-optical
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: on-failure
+    environment:
+      POSTGRES_USER: noor
+      POSTGRES_PASSWORD: noor
+      POSTGRES_DB: noor_optical
+    volumes:
+      - noor_optical_db:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U noor -d noor_optical']
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+
+  # One-shot: apply migrations, then seed the demonstration catalogue.
+  # Non-destructive — existing rows and admin edits are preserved.
+  migrate:
+    image: node:22-bookworm-slim
+    working_dir: /app
+    command:
+      - sh
+      - -ec
+      - |
+        CI=true npm ci --no-audit --no-fund
+        npm run db:migrate
+        npm run db:seed
+    volumes:
+      - ./noor-optical/api:/app
+    environment:
+      - DATABASE_URL=postgres://noor:noor@db:5432/noor_optical
+    env_file:
+      - ./noor-optical/.env.base44-defaults
+      # Platform secrets land last so a dashboard value always wins.
+      - path: /run/base44/app.env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+
+  api:
+    image: node:22-bookworm-slim
+    restart: on-failure
+    working_dir: /app
+    command:
+      - sh
+      - -ec
+      - CI=true npm ci --no-audit --no-fund && exec npm run dev
+    volumes:
+      - ./noor-optical/api:/app
+    ports:
+      - '8000:8000'
+    environment:
+      - PORT=8000
+      - DATABASE_URL=postgres://noor:noor@db:5432/noor_optical
+      # Preview/sandbox hosts rotate, so they are read at runtime, never baked in.
+      - BASE44_PUBLIC_HOST_SUFFIX
+      - BASE44_SANDBOX_HOST_DOMAIN
+      - BASE44_PREVIEW_MODE
+    env_file:
+      - ./noor-optical/.env.base44-defaults
+      - path: /run/base44/app.env
+        required: false
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    labels:
+      base44.project: 'NOOR OPTICAL API'
+      base44.kind: api
+      base44.port: 8000
+      base44.docs: /api/health
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:8000/api/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+
+  web:
+    image: node:22-bookworm-slim
+    restart: on-failure
+    working_dir: /app
+    command:
+      - sh
+      - -ec
+      - CI=true npm ci --no-audit --no-fund && exec npm run dev
+    volumes:
+      - ./noor-optical/web:/app
+    ports:
+      - '3000:5173'
+    environment:
+      - API_PROXY_TARGET=http://api:8000
+      # Injected by the platform; Vite appends it to server.allowedHosts.
+      - __VITE_ADDITIONAL_SERVER_ALLOWED_HOSTS
+      - BASE44_PREVIEW_MODE
+      - BASE44_SANDBOX_HOST_DOMAIN
+      - HOST=0.0.0.0
+    env_file:
+      - ./noor-optical/.env.base44-defaults
+    depends_on:
+      api:
+        condition: service_healthy
+    labels:
+      base44.project: 'NOOR OPTICAL Storefront'
+      base44.kind: web
+      base44.port: 3000
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:5173/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+      interval: 10s
+      timeout: 5s
+      retries: 15
+      start_period: 45s
+
+volumes:
+  noor_optical_db:
