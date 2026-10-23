@@ -1,13 +1,13 @@
 import { Link } from 'react-router-dom';
 import { api } from '../../lib/api';
 import { ORDER_STATUS_KEYS } from '../../lib/catalog';
-import { formatDate, formatPrice } from '../../lib/format';
+import { formatDate, formatNumber, formatPrice } from '../../lib/format';
 import { useAsync } from '../../lib/hooks';
 import { useI18n } from '../../lib/i18n';
 import { Button, EmptyState, Skeleton } from '../../components/ui/primitives';
 
 export const AdminDashboard = () => {
-  const { t, pick, locale, formatNumber } = useI18n();
+  const { t, pick, locale } = useI18n();
   const stats = useAsync(() => api.admin.stats(), []);
 
   if (stats.loading) {

@@ -534,7 +534,6 @@ const messages = {
   'value.Narrow': ['باریک', 'Narrow'],
   'value.Medium': ['متوسط', 'Medium'],
   'value.Wide': ['پهن', 'Wide'],
-  'value.Kids': ['کودکان', 'Kids'],
   'value.Grey': ['خاکستری', 'Grey'],
   'value.Brown': ['قهوه‌ای', 'Brown'],
   'value.Green': ['سبز', 'Green'],

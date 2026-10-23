@@ -1,5 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../lib/api';
+import { formatNumber } from '../lib/format';
 import { useAsync, useReveal } from '../lib/hooks';
 import { useI18n } from '../lib/i18n';
 import { CatalogPage } from './Catalog';
@@ -7,7 +8,7 @@ import { Breadcrumbs } from '../components/ui/nav';
 import { Button, EmptyState, SectionHeading, Skeleton } from '../components/ui/primitives';
 
 export const BrandsPage = () => {
-  const { t, pick, locale, formatNumber } = useI18n();
+  const { t, pick, locale } = useI18n();
   const { data, loading, error, reload } = useAsync(() => api.brands(), []);
   const ref = useReveal<HTMLDivElement>();
 

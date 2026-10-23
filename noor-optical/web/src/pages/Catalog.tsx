@@ -3,6 +3,7 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { api } from '../lib/api';
 import { orderFilterGroups } from '../lib/catalog';
 import { useAsync, useMediaQuery } from '../lib/hooks';
+import { formatNumber } from '../lib/format';
 import { useI18n } from '../lib/i18n';
 import type { FacetGroup, Product } from '../lib/types';
 import {
@@ -48,7 +49,7 @@ export const CatalogPage = ({
   family,
   breadcrumbs,
 }: CatalogPageProps) => {
-  const { t, pick, locale, formatNumber } = useI18n();
+  const { t, pick, locale } = useI18n();
   const [searchParams, setSearchParams] = useSearchParams();
   const isDesktop = useMediaQuery('(min-width: 1024px)');
   const [drawerOpen, setDrawerOpen] = useState(false);

@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from 'react';
+import type { ButtonHTMLAttributes, MouseEventHandler, ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { SpinnerIcon } from './Icons';
 
@@ -54,9 +54,11 @@ export const LinkButton = ({
   block = false,
   className = '',
   children,
-}: CommonProps & { to: string }) => (
+  onClick,
+}: CommonProps & { to: string; onClick?: MouseEventHandler<HTMLAnchorElement> }) => (
   <Link
     to={to}
+    onClick={onClick}
     className={`inline-flex items-center justify-center gap-2 uppercase tracking-wide2 transition-colors duration-200 ${VARIANTS[variant]} ${SIZES[size]} ${block ? 'w-full' : ''} ${className}`}
   >
     {children}

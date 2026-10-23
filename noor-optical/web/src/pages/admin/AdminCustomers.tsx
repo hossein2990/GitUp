@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { api } from '../../lib/api';
-import { formatDate, formatDigits, formatPrice } from '../../lib/format';
+import { formatDate, formatDigits, formatNumber, formatPrice } from '../../lib/format';
 import { useI18n } from '../../lib/i18n';
 import { Button, EmptyState, Skeleton } from '../../components/ui/primitives';
 
 type Customer = Awaited<ReturnType<typeof api.admin.customers>>['items'][number];
 
 export const AdminCustomers = () => {
-  const { t, locale, formatNumber } = useI18n();
+  const { t, locale } = useI18n();
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
