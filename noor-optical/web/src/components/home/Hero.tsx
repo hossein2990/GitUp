@@ -1,26 +1,47 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useI18n } from '../../lib/i18n';
 import { usePrefersReducedMotion } from '../../lib/hooks';
 import type { PublicSettings } from '../../lib/types';
 import { ChevronIcon } from '../ui/Icons';
 import { LinkButton } from '../ui/primitives';
+import { HeroScene } from '../three/HeroScene';
 
 /**
- * Homepage hero: a split composition — architectural navy panel beside a
- * full-bleed photograph — with a restrained cursor "lens flare" that follows the
- * pointer. Motion is skipped entirely for reduced-motion users.
+ * Homepage hero: a split composition — architectural navy panel with brand copy
+ * beside a live 3D scene of a pair of eyeglasses entering an "optical universe."
+ *
+ * The 3D scene recreates the behaviour from the reference video: the glasses
+ * scale in on mount, idle-rotate gently, then respond to scroll progress with
+ * orbiting camera movement, rotation, and a dispersing universe of floating lens
+ * rings. Motion is skipped entirely for reduced-motion users (static image fallback).
  */
 export const Hero = ({ settings }: { settings: PublicSettings }) => {
   const { t, pick } = useI18n();
   const reduced = usePrefersReducedMotion();
-  const frameRef = useRef<HTMLDivElement | null>(null);
-  const [flare, setFlare] = useState({ x: 62, y: 42, active: false });
+  const sectionRef = useRef<HTMLElement>(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Track scroll progress through the hero (0 = top, 1 = hero fully scrolled past)
+  useEffect(() => {
+    if (reduced) return;
+    const onScroll = () => {
+      const el = sectionRef.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      const scrolled = -rect.top;
+      const max = rect.height || 1;
+      setScrollProgress(Math.max(0, Math.min(1, scrolled / max)));
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [reduced]);
 
   const trust = settings.trust.slice(0, 3);
 
   return (
-    <section className="relative bg-navy text-ivory">
+    <section ref={sectionRef} className="relative bg-navy text-ivory">
       <div className="mx-auto grid max-w-[1600px] items-stretch gap-0 lg:grid-cols-[1.05fr_1fr]">
         <div className="flex flex-col justify-center px-5 pb-14 pt-16 md:px-8 md:pt-24 lg:pb-24 lg:pt-28">
           <p className="label-eyebrow text-champagne">{t('home.heroEyebrow')}</p>
@@ -57,39 +78,25 @@ export const Hero = ({ settings }: { settings: PublicSettings }) => {
           ) : null}
         </div>
 
-        <div
-          ref={frameRef}
-          onMouseMove={(event) => {
-            if (reduced) return;
-            const rect = frameRef.current?.getBoundingClientRect();
-            if (!rect) return;
-            setFlare({
-              x: ((event.clientX - rect.left) / rect.width) * 100,
-              y: ((event.clientY - rect.top) / rect.height) * 100,
-              active: true,
-            });
-          }}
-          onMouseLeave={() => setFlare((current) => ({ ...current, active: false }))}
-          className="relative min-h-[320px] overflow-hidden lg:min-h-[640px]"
-        >
-          {settings.hero.imageUrl ? (
-            <img
-              src={settings.hero.imageUrl}
-              alt={pick('نمای فروشگاه نور اپتیک', 'Noor Optical eyewear')}
-              className="h-full w-full object-cover animate-reveal"
-            />
+        <div className="relative min-h-[320px] overflow-hidden lg:min-h-[640px]">
+          {reduced ? (
+            // Reduced-motion fallback: static hero image
+            settings.hero.imageUrl ? (
+              <img
+                src={settings.hero.imageUrl}
+                alt={pick('نمای فروشگاه نور اپتیک', 'Noor Optical eyewear')}
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              <div className="h-full w-full bg-navy-soft" />
+            )
           ) : (
-            <div className="h-full w-full bg-navy-soft" />
+            <HeroScene scrollProgress={scrollProgress} />
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-navy-deep/75 via-navy/25 to-transparent" />
-          <div
-            aria-hidden
-            className="pointer-events-none absolute inset-0 transition-opacity duration-500"
-            style={{
-              opacity: flare.active && !reduced ? 0.85 : 0,
-              background: `radial-gradient(420px circle at ${flare.x}% ${flare.y}%, rgb(var(--champagne) / 0.22), transparent 62%)`,
-            }}
-          />
+
+          {/* Gradient overlay for text legibility at the bottom of the panel */}
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-navy-deep/80 via-transparent to-transparent" />
+
           <div className="absolute inset-x-5 bottom-8 flex items-end justify-between gap-4 md:inset-x-8">
             <p className="max-w-[26ch] text-[13px] leading-relaxed text-ivory/80">
               {t('home.editorialBody')}
